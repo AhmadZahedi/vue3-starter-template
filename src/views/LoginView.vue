@@ -1,6 +1,23 @@
 <template>
 <header>
     <nav>
+        <VTooltip
+            trigger="click"
+            position="top"
+        >
+            <template #activator="{ on }">
+                <button
+                    v-on="on"
+                    type="button"
+                    class="btn btn-outline-warning text-black"
+                >
+                    <span>masoud</span>
+                    click here
+                </button>
+            </template>
+
+            <span>{{ $t('Hello') }}</span>
+        </VTooltip>
         <RouterLink :to="{ name: 'Dashboard' }">
             {{ $t('Dashboard') }}
         </RouterLink>
@@ -12,26 +29,28 @@
 </header>
 
 <main>
-    <h1>{{ $t('Login') }}</h1>
+    <div class="d-flex flex-column justify-content-between vh-100">
+        <h1>{{ $t('Login') }}</h1>
+        <div>
+            <VTooltip
+                trigger="click"
+                position="bottom"
+            >
+                <template #activator="{ on }">
+                    <button
+                        v-on="on"
+                        type="button"
+                        class="btn btn-outline-warning text-black"
+                    >
+                        click here
+                    </button>
+                </template>
 
-    <div style="height: 4000px; margin: 500px">
-        <VTooltip
-            trigger="click"
-            position="start"
-        >
-            <template #activator="{ on }">
-                <button
-                    v-on="on"
-                    type="button"
-                    class="btn btn-outline-warning text-black"
-                >
-                    click here
-                </button>
-            </template>
-
-            <span>{{ $t('Hello') }}</span>
-        </VTooltip>
+                <span>{{ $t('Hello') }}</span>
+            </VTooltip>
+        </div>
     </div>
+
 </main>
 </template>
 <script setup>
