@@ -78,9 +78,13 @@ export default {
         });
 
         const tooltip = ref(undefined);
+
+        let arrowPosition = ref(undefined);
+
         const tooltipClassNames = computed(() => {
             return [
                 'tooltip show px-2 py-1 rounded-2',
+                `arrow-${arrowPosition.value}`,
                 `bg-${props.theme}`,
                 `text-bg-${props.theme}`,
                 `tooltip-${props.position}`
@@ -89,16 +93,20 @@ export default {
 
         const isShown = ref(false);
 
-        const gap = 2;
+        const gap = 5;
 
         function stickToTop(tooltipEl, targetEl) {
             tooltipEl.style.top = targetEl.top - tooltipEl.clientHeight - gap + window.scrollY + 'px';
             tooltipEl.style.left = targetEl.left + (targetEl.width / 2) - (tooltipEl.clientWidth / 2) + 'px';
+
+            arrowPosition.value = 'bottom';
         }
 
         function stickToBottom(tooltipEl, targetEl) {
             tooltipEl.style.top = targetEl.bottom + window.scrollY + gap + 'px';
             tooltipEl.style.left = targetEl.left + (targetEl.width / 2) - (tooltipEl.clientWidth / 2) + 'px';
+
+            arrowPosition.value = 'top';
         }
 
         function stickToStart(tooltipEl, targetEl) {
@@ -106,8 +114,12 @@ export default {
 
             if (LanguageService.isRtl()) {
                 tooltipEl.style.left = targetEl.left + targetEl.width + gap + 'px';
+
+                arrowPosition.value = 'left';
             } else {
                 tooltipEl.style.left = targetEl.left - tooltipEl.clientWidth - gap + 'px';
+
+                arrowPosition.value = 'right';
             }
         }
 
@@ -116,12 +128,16 @@ export default {
 
             if (LanguageService.isRtl()) {
                 tooltipEl.style.left = targetEl.left - tooltipEl.clientWidth - gap + 'px';
+
+                arrowPosition.value = 'right';
             } else {
                 tooltipEl.style.left = targetEl.left + targetEl.width + gap + 'px';
+
+                arrowPosition.value = 'left';
             }
         }
 
-        function reset() {
+        function resetStyles() {
             tooltip.value.style.removeProperty('top');
             tooltip.value.style.removeProperty('left');
         }
@@ -166,22 +182,22 @@ export default {
                 }
 
                 if (getRectDistanceFrom('left') < 0) {
-                    reset();
+                    resetStyles();
                     LanguageService.isRtl() ? stickToStart(tooltip.value, rect) : stickToEnd(tooltip.value, rect);
                 }
 
                 if (getRectDistanceFrom('right') < 0) {
-                    reset();
+                    resetStyles();
                     LanguageService.isRtl() ? stickToEnd(tooltip.value, rect) : stickToStart(tooltip.value, rect);
                 }
 
                 if (getRectDistanceFrom('top') < 0) {
-                    reset();
+                    resetStyles();
                     stickToBottom(tooltip.value, rect);
                 }
 
                 if (getRectDistanceFrom('bottom') < 0) {
-                    reset();
+                    resetStyles();
                     stickToTop(tooltip.value, rect);
                 }
             });
@@ -222,3 +238,45 @@ export default {
 
 }
 </script>
+
+<style scoped>
+.arrow-bottom::before {
+    position: absolute;
+    content: '';
+    border: solid 5px;
+    top: 100%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    border-color: red transparent transparent transparent;
+}
+
+.arrow-top::before {
+    position: absolute;
+    content: '';
+    border: solid 5px;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -100%);
+    border-color: transparent transparent red transparent;
+}
+
+.arrow-left::before {
+    position: absolute;
+    content: '';
+    border: solid 5px;
+    top: 50%;
+    left: 100%;
+    transform: translate(0, -50%);
+    border-color: transparent transparent transparent red;
+}
+
+.arrow-right::before {
+    position: absolute;
+    content: '';
+    border: solid 5px;
+    top: 50%;
+    left: 0;
+    transform: translate(-100%, -50%);
+    border-color: transparent red transparent transparent;
+}
+</style>
