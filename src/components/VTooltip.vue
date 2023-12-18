@@ -95,11 +95,34 @@ export default {
 
         const gap = 5;
 
+        function getRectDistanceFrom(bound, rect) {
+            switch (bound) {
+                case 'top':
+                    return rect.top;
+                case 'left':
+                    return rect.left;
+                case 'bottom':
+                    return window.innerHeight - rect.bottom;
+                case 'right':
+                    return window.innerWidth - rect.right;
+            }
+        }
+
         function stickToTop(tooltipEl, targetEl) {
             tooltipEl.style.top = targetEl.top - tooltipEl.clientHeight - gap + window.scrollY + 'px';
             tooltipEl.style.left = targetEl.left + (targetEl.width / 2) - (tooltipEl.clientWidth / 2) + 'px';
 
             arrowPosition.value = 'bottom';
+
+            const tooltipRect = tooltipEl.getBoundingClientRect();
+
+            if (getRectDistanceFrom('left', tooltipRect) < 0) {
+                tooltip.value.style.removeProperty('left');
+                tooltip.value.style.left = gap + 'px';
+            } else if (getRectDistanceFrom('right', tooltipRect) < 0) {
+                tooltip.value.style.removeProperty('left');
+                tooltip.value.style.right = gap + 'px';
+            }
         }
 
         function stickToBottom(tooltipEl, targetEl) {
@@ -107,6 +130,16 @@ export default {
             tooltipEl.style.left = targetEl.left + (targetEl.width / 2) - (tooltipEl.clientWidth / 2) + 'px';
 
             arrowPosition.value = 'top';
+
+            const tooltipRect = tooltipEl.getBoundingClientRect();
+
+            if (getRectDistanceFrom('left', tooltipRect) < 0) {
+                tooltip.value.style.removeProperty('left');
+                tooltip.value.style.left = gap + 'px';
+            } else if (getRectDistanceFrom('right', tooltipRect) < 0) {
+                tooltip.value.style.removeProperty('left');
+                tooltip.value.style.right = gap + 'px';
+            }
         }
 
         function stickToStart(tooltipEl, targetEl) {
@@ -168,35 +201,22 @@ export default {
 
                 const tooltipRect = tooltip.value.getBoundingClientRect();
 
-                function getRectDistanceFrom(bound) {
-                    switch (bound) {
-                        case 'top':
-                            return tooltipRect.top;
-                        case 'left':
-                            return tooltipRect.left;
-                        case 'bottom':
-                            return window.innerHeight - tooltipRect.bottom;
-                        case 'right':
-                            return window.innerWidth - tooltipRect.right;
-                    }
-                }
-
-                if (getRectDistanceFrom('left') < 0) {
+                if (getRectDistanceFrom('left', tooltipRect) < 0) {
                     resetStyles();
                     LanguageService.isRtl() ? stickToStart(tooltip.value, rect) : stickToEnd(tooltip.value, rect);
                 }
 
-                if (getRectDistanceFrom('right') < 0) {
+                if (getRectDistanceFrom('right', tooltipRect) < 0) {
                     resetStyles();
                     LanguageService.isRtl() ? stickToEnd(tooltip.value, rect) : stickToStart(tooltip.value, rect);
                 }
 
-                if (getRectDistanceFrom('top') < 0) {
+                if (getRectDistanceFrom('top', tooltipRect) < 0) {
                     resetStyles();
                     stickToBottom(tooltip.value, rect);
                 }
 
-                if (getRectDistanceFrom('bottom') < 0) {
+                if (getRectDistanceFrom('bottom', tooltipRect) < 0) {
                     resetStyles();
                     stickToTop(tooltip.value, rect);
                 }
