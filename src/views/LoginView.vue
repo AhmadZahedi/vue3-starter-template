@@ -16,7 +16,9 @@
                 </button>
             </template>
 
-            <span>{{ $t('Hello') }}</span>
+            <span>
+                HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello
+            </span>
         </VTooltip>
         <RouterLink :to="{ name: 'Dashboard' }">
             {{ $t('Dashboard') }}
@@ -47,7 +49,9 @@
                     </button>
                 </template>
 
-                <span>{{ $t('Hello') }}</span>
+                <span>
+                    HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello
+                </span>
             </VTooltip>
         </div>
 
@@ -66,7 +70,9 @@
                     </button>
                 </template>
 
-                <span>{{ $t('Hello') }}</span>
+                <span>
+                    HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello
+                </span>
             </VTooltip>
         </div>
 
@@ -85,7 +91,9 @@
                     </button>
                 </template>
 
-                <span>{{ $t('HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello') }}</span>
+                <span>
+                    HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello
+                </span>
             </VTooltip>
         </div>
     </div>

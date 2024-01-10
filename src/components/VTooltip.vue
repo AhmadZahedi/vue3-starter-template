@@ -7,6 +7,7 @@
         :class="tooltipClassNames"
         ref="tooltip"
     >
+        <span ref="tooltipArrow" class="arrow-test"></span>
         <slot></slot>
     </div>
 </Teleport>
@@ -67,7 +68,6 @@ export default {
                 case ComponentTrigger.CLICK:
                     result.click = toggle;
                     break;
-
                 case ComponentTrigger.FOCUS:
                     result.focus = show;
                     result.blur = hide;
@@ -78,6 +78,7 @@ export default {
         });
 
         const tooltip = ref(undefined);
+        const tooltipArrow = ref(undefined);
 
         let arrowPosition = ref(undefined);
 
@@ -108,9 +109,9 @@ export default {
             }
         }
 
-        function stickToTop(tooltipEl, targetEl) {
-            tooltipEl.style.top = targetEl.top - tooltipEl.clientHeight - gap + window.scrollY + 'px';
-            tooltipEl.style.left = targetEl.left + (targetEl.width / 2) - (tooltipEl.clientWidth / 2) + 'px';
+        function stickToTop(tooltipEl, targetRect) {
+            tooltipEl.style.top = targetRect.top - tooltipEl.clientHeight - gap + window.scrollY + 'px';
+            tooltipEl.style.left = targetRect.left + (targetRect.width / 2) - (tooltipEl.clientWidth / 2) + 'px';
 
             arrowPosition.value = 'bottom';
 
@@ -125,13 +126,31 @@ export default {
             }
         }
 
-        function stickToBottom(tooltipEl, targetEl) {
-            tooltipEl.style.top = targetEl.bottom + window.scrollY + gap + 'px';
-            tooltipEl.style.left = targetEl.left + (targetEl.width / 2) - (tooltipEl.clientWidth / 2) + 'px';
+        function stickToBottom(tooltipEl, arrowEl, targetRect) {
+            tooltipEl.style.top = targetRect.bottom + window.scrollY + gap + 'px';
+            tooltipEl.style.left = targetRect.left + (targetRect.width / 2) - (tooltipEl.clientWidth / 2) + 'px';
 
             arrowPosition.value = 'top';
 
             const tooltipRect = tooltipEl.getBoundingClientRect();
+
+            arrowEl.style.borderColor = `transparent transparent var(--bs-${props.theme}) transparent`;
+            if (tooltipEl.getBoundingClientRect().left < gap) {
+                console.log('1')
+                arrowEl.style.left = targetRect.left + (targetRect.width / 2) - gap + 'px';
+            } else if (tooltipEl.getBoundingClientRect().left >= gap && tooltipEl.getBoundingClientRect().left + tooltipEl.getBoundingClientRect().width > visualViewport.width - gap) {
+                console.log('visualViewport.width - gap', visualViewport.width - gap)
+                console.log('tooltipEl.getBoundingClientRect().left + tooltipEl.getBoundingClientRect().width', tooltipEl.getBoundingClientRect().left + tooltipEl.getBoundingClientRect().width)
+                arrowEl.style.left = targetRect.left + (targetRect.width / 2) - tooltipEl.getBoundingClientRect().left + 'px';
+            } else if (tooltipEl.getBoundingClientRect().left + tooltipEl.getBoundingClientRect().width <= visualViewport.width - gap) {
+                console.log('3')
+                arrowEl.style.right = targetRect.right + (targetRect.width / 2) - gap + 'px';
+            }
+            arrowEl.style.top = '0';
+            arrowEl.style.transform = 'translate(-50%, -100%)';
+
+            console.log('targetRect.left ', targetRect.left)
+            console.log('targetRect.width ', targetRect.width)
 
             if (getRectDistanceFrom('left', tooltipRect) < 0) {
                 tooltip.value.style.removeProperty('left');
@@ -142,29 +161,29 @@ export default {
             }
         }
 
-        function stickToStart(tooltipEl, targetEl) {
-            tooltipEl.style.top = targetEl.top + (targetEl.height / 2) - (tooltipEl.clientHeight / 2) + window.scrollY + 'px';
+        function stickToStart(tooltipEl, targetRect) {
+            tooltipEl.style.top = targetRect.top + (targetRect.height / 2) - (tooltipEl.clientHeight / 2) + window.scrollY + 'px';
 
             if (LanguageService.isRtl()) {
-                tooltipEl.style.left = targetEl.left + targetEl.width + gap + 'px';
+                tooltipEl.style.left = targetRect.left + targetRect.width + gap + 'px';
 
                 arrowPosition.value = 'left';
             } else {
-                tooltipEl.style.left = targetEl.left - tooltipEl.clientWidth - gap + 'px';
+                tooltipEl.style.left = targetRect.left - tooltipEl.clientWidth - gap + 'px';
 
                 arrowPosition.value = 'right';
             }
         }
 
-        function stickToEnd(tooltipEl, targetEl) {
-            tooltipEl.style.top = targetEl.top + (targetEl.height / 2) - (tooltipEl.clientHeight / 2) + window.scrollY + 'px';
+        function stickToEnd(tooltipEl, targetRect) {
+            tooltipEl.style.top = targetRect.top + (targetRect.height / 2) - (tooltipEl.clientHeight / 2) + window.scrollY + 'px';
 
             if (LanguageService.isRtl()) {
-                tooltipEl.style.left = targetEl.left - tooltipEl.clientWidth - gap + 'px';
+                tooltipEl.style.left = targetRect.left - tooltipEl.clientWidth - gap + 'px';
 
                 arrowPosition.value = 'right';
             } else {
-                tooltipEl.style.left = targetEl.left + targetEl.width + gap + 'px';
+                tooltipEl.style.left = targetRect.left + targetRect.width + gap + 'px';
 
                 arrowPosition.value = 'left';
             }
@@ -187,7 +206,7 @@ export default {
                         break;
 
                     case ComponentPosition.BOTTOM:
-                        stickToBottom(tooltip.value, rect);
+                        stickToBottom(tooltip.value, tooltipArrow.value, rect);
                         break;
 
                     case ComponentPosition.START:
@@ -213,7 +232,7 @@ export default {
 
                 if (getRectDistanceFrom('top', tooltipRect) < 0) {
                     resetStyles();
-                    stickToBottom(tooltip.value, rect);
+                    stickToBottom(tooltip.value, tooltipArrow.value, rect);
                 }
 
                 if (getRectDistanceFrom('bottom', tooltipRect) < 0) {
@@ -248,6 +267,7 @@ export default {
             listeners,
 
             tooltip,
+            tooltipArrow,
             tooltipClassNames,
 
             isShown,
@@ -260,6 +280,15 @@ export default {
 </script>
 
 <style scoped>
+.arrow-test {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border: solid 5px;
+
+    transform: translate(-50%, 0);
+}
+
 .arrow-bottom::before {
     position: absolute;
     content: '';
