@@ -109,13 +109,14 @@ export default {
             }
         }
 
-        function stickToTop(tooltipEl, targetRect) {
+        function stickToTop(tooltipEl, arrowEl, targetRect) {
             tooltipEl.style.top = targetRect.top - tooltipEl.clientHeight - gap + window.scrollY + 'px';
             tooltipEl.style.left = targetRect.left + (targetRect.width / 2) - (tooltipEl.clientWidth / 2) + 'px';
 
             arrowPosition.value = 'bottom';
 
             const tooltipRect = tooltipEl.getBoundingClientRect();
+
 
             if (getRectDistanceFrom('left', tooltipRect) < 0) {
                 tooltip.value.style.removeProperty('left');
@@ -124,6 +125,22 @@ export default {
                 tooltip.value.style.removeProperty('left');
                 tooltip.value.style.right = gap + 'px';
             }
+
+            resetArrowStyles(arrowEl)
+
+            arrowEl.style.bottom = '0';
+            arrowEl.style.transform = 'translate(-50%, 100%)';
+            arrowEl.style.borderColor = `var(--bs-${props.theme}) transparent transparent transparent`;
+            arrowEl.style.left = targetRect.left + (targetRect.width / 2) + (arrowEl.getBoundingClientRect().width / 2) - arrowEl.getBoundingClientRect().left + 'px';
+        }
+
+        function resetArrowStyles(arrEl) {
+            if (!arrEl.style) return;
+            arrEl.style.bottom = null;
+            arrEl.style.top = null;
+            arrEl.style.left = null;
+            arrEl.style.transform = null;
+            arrEl.style.borderColor = null;
         }
 
         function stickToBottom(tooltipEl, arrowEl, targetRect) {
@@ -134,24 +151,6 @@ export default {
 
             const tooltipRect = tooltipEl.getBoundingClientRect();
 
-            arrowEl.style.borderColor = `transparent transparent var(--bs-${props.theme}) transparent`;
-            if (tooltipEl.getBoundingClientRect().left < gap) {
-                console.log('1')
-                arrowEl.style.left = targetRect.left + (targetRect.width / 2) - gap + 'px';
-            } else if (tooltipEl.getBoundingClientRect().left >= gap && tooltipEl.getBoundingClientRect().left + tooltipEl.getBoundingClientRect().width > visualViewport.width - gap) {
-                console.log('visualViewport.width - gap', visualViewport.width - gap)
-                console.log('tooltipEl.getBoundingClientRect().left + tooltipEl.getBoundingClientRect().width', tooltipEl.getBoundingClientRect().left + tooltipEl.getBoundingClientRect().width)
-                arrowEl.style.left = targetRect.left + (targetRect.width / 2) - tooltipEl.getBoundingClientRect().left + 'px';
-            } else if (tooltipEl.getBoundingClientRect().left + tooltipEl.getBoundingClientRect().width <= visualViewport.width - gap) {
-                console.log('3')
-                arrowEl.style.right = targetRect.right + (targetRect.width / 2) - gap + 'px';
-            }
-            arrowEl.style.top = '0';
-            arrowEl.style.transform = 'translate(-50%, -100%)';
-
-            console.log('targetRect.left ', targetRect.left)
-            console.log('targetRect.width ', targetRect.width)
-
             if (getRectDistanceFrom('left', tooltipRect) < 0) {
                 tooltip.value.style.removeProperty('left');
                 tooltip.value.style.left = gap + 'px';
@@ -159,9 +158,16 @@ export default {
                 tooltip.value.style.removeProperty('left');
                 tooltip.value.style.right = gap + 'px';
             }
+
+            resetArrowStyles(arrowEl)
+
+            arrowEl.style.top = '0';
+            arrowEl.style.transform = 'translate(-50%, -100%)';
+            arrowEl.style.borderColor = `transparent transparent var(--bs-${props.theme}) transparent`;
+            arrowEl.style.left = targetRect.left + (targetRect.width / 2) + (arrowEl.getBoundingClientRect().width / 2) - arrowEl.getBoundingClientRect().left + 'px';
         }
 
-        function stickToStart(tooltipEl, targetRect) {
+        function stickToStart(tooltipEl, arrowEl, targetRect) {
             tooltipEl.style.top = targetRect.top + (targetRect.height / 2) - (tooltipEl.clientHeight / 2) + window.scrollY + 'px';
 
             if (LanguageService.isRtl()) {
@@ -173,9 +179,16 @@ export default {
 
                 arrowPosition.value = 'right';
             }
+
+            resetArrowStyles(arrowEl)
+
+            arrowEl.style.top = '50%';
+            arrowEl.style.transform = 'translate(0%, -50%)';
+            arrowEl.style.borderColor = `transparent transparent transparent var(--bs-${props.theme})`;
+            arrowEl.style.left = '100%';
         }
 
-        function stickToEnd(tooltipEl, targetRect) {
+        function stickToEnd(tooltipEl, arrowEl, targetRect) {
             tooltipEl.style.top = targetRect.top + (targetRect.height / 2) - (tooltipEl.clientHeight / 2) + window.scrollY + 'px';
 
             if (LanguageService.isRtl()) {
@@ -187,6 +200,13 @@ export default {
 
                 arrowPosition.value = 'left';
             }
+
+            resetArrowStyles(arrowEl)
+
+            arrowEl.style.top = '50%';
+            arrowEl.style.transform = 'translate(-100%, -50%)';
+            arrowEl.style.borderColor = `transparent var(--bs-${props.theme}) transparent transparent`;
+            arrowEl.style.left = '0';
         }
 
         function resetStyles() {
@@ -202,7 +222,7 @@ export default {
             nextTick(() => {
                 switch (props.position) {
                     case ComponentPosition.TOP:
-                        stickToTop(tooltip.value, rect);
+                        stickToTop(tooltip.value, tooltipArrow.value, rect);
                         break;
 
                     case ComponentPosition.BOTTOM:
@@ -210,11 +230,11 @@ export default {
                         break;
 
                     case ComponentPosition.START:
-                        stickToStart(tooltip.value, rect);
+                        stickToStart(tooltip.value, tooltipArrow.value, rect);
                         break;
 
                     case ComponentPosition.END:
-                        stickToEnd(tooltip.value, rect);
+                        stickToEnd(tooltip.value, tooltipArrow.value, rect);
                         break;
                 }
 
@@ -222,12 +242,12 @@ export default {
 
                 if (getRectDistanceFrom('left', tooltipRect) < 0) {
                     resetStyles();
-                    LanguageService.isRtl() ? stickToStart(tooltip.value, rect) : stickToEnd(tooltip.value, rect);
+                    LanguageService.isRtl() ? stickToStart(tooltip.value, tooltipArrow.value, rect) : stickToEnd(tooltip.value, tooltipArrow.value, rect);
                 }
 
                 if (getRectDistanceFrom('right', tooltipRect) < 0) {
                     resetStyles();
-                    LanguageService.isRtl() ? stickToEnd(tooltip.value, rect) : stickToStart(tooltip.value, rect);
+                    LanguageService.isRtl() ? stickToEnd(tooltip.value, tooltipArrow.value, rect) : stickToStart(tooltip.value, tooltipArrow.value, rect);
                 }
 
                 if (getRectDistanceFrom('top', tooltipRect) < 0) {
@@ -237,7 +257,7 @@ export default {
 
                 if (getRectDistanceFrom('bottom', tooltipRect) < 0) {
                     resetStyles();
-                    stickToTop(tooltip.value, rect);
+                    stickToTop(tooltip.value, tooltipArrow.value, rect);
                 }
             });
         }
@@ -290,42 +310,42 @@ export default {
 }
 
 .arrow-bottom::before {
-    position: absolute;
-    content: '';
-    border: solid 5px;
-    top: 100%;
-    left: 50%;
-    transform: translate(-50%, 0);
-    border-color: red transparent transparent transparent;
+    //position: absolute;
+    //content: '';
+    //border: solid 5px;
+    //top: 100%;
+    //left: 50%;
+    //transform: translate(-50%, 0);
+    //border-color: red transparent transparent transparent;
 }
 
 .arrow-top::before {
-    position: absolute;
-    content: '';
-    border: solid 5px;
-    top: 0;
-    left: 50%;
-    transform: translate(-50%, -100%);
-    border-color: transparent transparent red transparent;
+    //position: absolute;
+    //content: '';
+    //border: solid 5px;
+    //top: 0;
+    //left: 50%;
+    //transform: translate(-50%, -100%);
+    //border-color: transparent transparent red transparent;
 }
 
 .arrow-left::before {
-    position: absolute;
-    content: '';
-    border: solid 5px;
-    top: 50%;
-    left: 100%;
-    transform: translate(0, -50%);
-    border-color: transparent transparent transparent red;
+    //position: absolute;
+    //content: '';
+    //border: solid 5px;
+    //top: 50%;
+    //left: 100%;
+    //transform: translate(0, -50%);
+    //border-color: transparent transparent transparent red;
 }
 
 .arrow-right::before {
-    position: absolute;
-    content: '';
-    border: solid 5px;
-    top: 50%;
-    left: 0;
-    transform: translate(-100%, -50%);
-    border-color: transparent red transparent transparent;
+    //position: absolute;
+    //content: '';
+    //border: solid 5px;
+    //top: 50%;
+    //left: 0;
+    //transform: translate(-100%, -50%);
+    //border-color: transparent red transparent transparent;
 }
 </style>
