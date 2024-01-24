@@ -7,7 +7,7 @@
         :class="tooltipClassNames"
         ref="tooltip"
     >
-        <span ref="tooltipArrow" class="arrow-test"></span>
+        <span ref="tooltipArrow" class="arrow"></span>
         <slot></slot>
     </div>
 </Teleport>
@@ -300,52 +300,12 @@ export default {
 </script>
 
 <style scoped>
-.arrow-test {
+.arrow {
     position: absolute;
     width: 10px;
     height: 10px;
     border: solid 5px;
 
     transform: translate(-50%, 0);
-}
-
-.arrow-bottom::before {
-    //position: absolute;
-    //content: '';
-    //border: solid 5px;
-    //top: 100%;
-    //left: 50%;
-    //transform: translate(-50%, 0);
-    //border-color: red transparent transparent transparent;
-}
-
-.arrow-top::before {
-    //position: absolute;
-    //content: '';
-    //border: solid 5px;
-    //top: 0;
-    //left: 50%;
-    //transform: translate(-50%, -100%);
-    //border-color: transparent transparent red transparent;
-}
-
-.arrow-left::before {
-    //position: absolute;
-    //content: '';
-    //border: solid 5px;
-    //top: 50%;
-    //left: 100%;
-    //transform: translate(0, -50%);
-    //border-color: transparent transparent transparent red;
-}
-
-.arrow-right::before {
-    //position: absolute;
-    //content: '';
-    //border: solid 5px;
-    //top: 50%;
-    //left: 0;
-    //transform: translate(-100%, -50%);
-    //border-color: transparent red transparent transparent;
 }
 </style>
