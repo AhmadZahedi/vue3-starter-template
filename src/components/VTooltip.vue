@@ -76,24 +76,17 @@ export default {
 
             return result
         });
-
         const tooltip = ref(undefined);
         const tooltipArrow = ref(undefined);
-
-        let arrowPosition = ref(undefined);
-
         const tooltipClassNames = computed(() => {
             return [
                 'tooltip show px-2 py-1 rounded-2',
-                `arrow-${arrowPosition.value}`,
                 `bg-${props.theme}`,
                 `text-bg-${props.theme}`,
                 `tooltip-${props.position}`
             ];
         });
-
         const isShown = ref(false);
-
         const gap = 5;
 
         function getRectDistanceFrom(bound, rect) {
@@ -109,11 +102,23 @@ export default {
             }
         }
 
+        function resetTooltipStyles() {
+            tooltip.value.style.removeProperty('top');
+            tooltip.value.style.removeProperty('left');
+        }
+
+        function resetArrowStyles(arrEl) {
+            if (!arrEl.style) return;
+            arrEl.style.bottom = null;
+            arrEl.style.top = null;
+            arrEl.style.left = null;
+            arrEl.style.transform = null;
+            arrEl.style.borderColor = null;
+        }
+
         function stickToTop(tooltipEl, arrowEl, targetRect) {
             tooltipEl.style.top = targetRect.top - tooltipEl.clientHeight - gap + window.scrollY + 'px';
             tooltipEl.style.left = targetRect.left + (targetRect.width / 2) - (tooltipEl.clientWidth / 2) + 'px';
-
-            arrowPosition.value = 'bottom';
 
             const tooltipRect = tooltipEl.getBoundingClientRect();
 
@@ -134,20 +139,9 @@ export default {
             arrowEl.style.left = targetRect.left + (targetRect.width / 2) + (arrowEl.getBoundingClientRect().width / 2) - arrowEl.getBoundingClientRect().left + 'px';
         }
 
-        function resetArrowStyles(arrEl) {
-            if (!arrEl.style) return;
-            arrEl.style.bottom = null;
-            arrEl.style.top = null;
-            arrEl.style.left = null;
-            arrEl.style.transform = null;
-            arrEl.style.borderColor = null;
-        }
-
         function stickToBottom(tooltipEl, arrowEl, targetRect) {
             tooltipEl.style.top = targetRect.bottom + window.scrollY + gap + 'px';
             tooltipEl.style.left = targetRect.left + (targetRect.width / 2) - (tooltipEl.clientWidth / 2) + 'px';
-
-            arrowPosition.value = 'top';
 
             const tooltipRect = tooltipEl.getBoundingClientRect();
 
@@ -172,12 +166,8 @@ export default {
 
             if (LanguageService.isRtl()) {
                 tooltipEl.style.left = targetRect.left + targetRect.width + gap + 'px';
-
-                arrowPosition.value = 'left';
             } else {
                 tooltipEl.style.left = targetRect.left - tooltipEl.clientWidth - gap + 'px';
-
-                arrowPosition.value = 'right';
             }
 
             resetArrowStyles(arrowEl)
@@ -193,12 +183,8 @@ export default {
 
             if (LanguageService.isRtl()) {
                 tooltipEl.style.left = targetRect.left - tooltipEl.clientWidth - gap + 'px';
-
-                arrowPosition.value = 'right';
             } else {
                 tooltipEl.style.left = targetRect.left + targetRect.width + gap + 'px';
-
-                arrowPosition.value = 'left';
             }
 
             resetArrowStyles(arrowEl)
@@ -207,11 +193,6 @@ export default {
             arrowEl.style.transform = 'translate(-100%, -50%)';
             arrowEl.style.borderColor = `transparent var(--bs-${props.theme}) transparent transparent`;
             arrowEl.style.left = '0';
-        }
-
-        function resetStyles() {
-            tooltip.value.style.removeProperty('top');
-            tooltip.value.style.removeProperty('left');
         }
 
         function show(event) {
@@ -241,22 +222,22 @@ export default {
                 const tooltipRect = tooltip.value.getBoundingClientRect();
 
                 if (getRectDistanceFrom('left', tooltipRect) < 0) {
-                    resetStyles();
+                    resetTooltipStyles();
                     LanguageService.isRtl() ? stickToStart(tooltip.value, tooltipArrow.value, rect) : stickToEnd(tooltip.value, tooltipArrow.value, rect);
                 }
 
                 if (getRectDistanceFrom('right', tooltipRect) < 0) {
-                    resetStyles();
+                    resetTooltipStyles();
                     LanguageService.isRtl() ? stickToEnd(tooltip.value, tooltipArrow.value, rect) : stickToStart(tooltip.value, tooltipArrow.value, rect);
                 }
 
                 if (getRectDistanceFrom('top', tooltipRect) < 0) {
-                    resetStyles();
+                    resetTooltipStyles();
                     stickToBottom(tooltip.value, tooltipArrow.value, rect);
                 }
 
                 if (getRectDistanceFrom('bottom', tooltipRect) < 0) {
-                    resetStyles();
+                    resetTooltipStyles();
                     stickToTop(tooltip.value, tooltipArrow.value, rect);
                 }
             });
@@ -285,11 +266,9 @@ export default {
 
         return {
             listeners,
-
             tooltip,
             tooltipArrow,
             tooltipClassNames,
-
             isShown,
             show,
             hide,
@@ -305,7 +284,6 @@ export default {
     width: 10px;
     height: 10px;
     border: solid 5px;
-
     transform: translate(-50%, 0);
 }
 </style>
