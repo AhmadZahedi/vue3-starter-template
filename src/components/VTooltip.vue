@@ -122,7 +122,6 @@ export default {
 
             const tooltipRect = tooltipEl.getBoundingClientRect();
 
-
             if (getRectDistanceFrom('left', tooltipRect) < 0) {
                 tooltip.value.style.removeProperty('left');
                 tooltip.value.style.left = gap + 'px';
